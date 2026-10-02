@@ -22,9 +22,9 @@
 Ce dépôt héberge le code source de mon **portfolio interactif et dossier de compétences**, déployé publiquement via **GitHub Pages**.
 
 Il présente en détail :
-- Mon parcours et mes **3 ans d'expérience** en ingénierie d'infrastructures et support N3 (MCO).
-- Mes **projets majeurs** d'architecture Cloud, IaC (Terraform / GKE Autopilot) et de haute disponibilité système (Cluster RDS & Trajectoire Azure).
-- Mes **certifications professionnelles** (AWS, Microsoft Azure AZ-900, Cisco CCNA & Cybersecurity).
+- Mon parcours et mes **3 ans d'expérience** en ingénierie d'infrastructures et support technique.
+- Mes **projets majeurs** en architecture Cloud, systèmes, réseaux et télécoms.
+- Mes compétences techniques et mes **certifications professionnelles**.
 
 👉 **Pour explorer l'ensemble des réalisations : [https://nour-oueslati.github.io/](https://nour-oueslati.github.io/)**
 
