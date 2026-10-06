@@ -1173,46 +1173,87 @@
 
 <!-- Sécurisation contact et suivi des visites -->
 <script>
-  // 1. Déclenchement de l'e-mail au clic (invisible pour les scrapers de code source)
-  document.querySelectorAll('.mail-btn').forEach(function (btn) {
-    btn.addEventListener('click', function (e) {
-      e.preventDefault();
-      var u = "nour.oueslati01";
-      var d = "gmail.com";
-      var sub = btn.getAttribute('data-subject');
-      var mailtoUrl = "mailto:" + u + "@" + d + (sub ? "?subject=" + encodeURIComponent(sub) : "");
-      window.location.href = mailtoUrl;
-    });
+// 1. Déclenchement de l'e-mail au clic (protection anti-scraping)
+document.querySelectorAll('.mail-btn').forEach(function (btn) {
+  btn.addEventListener('click', function (e) {
+    e.preventDefault();
+    var u = "nour.oueslati01";
+    var d = "gmail.com";
+    var sub = btn.getAttribute('data-subject');
+    var mailtoUrl = "mailto:" + u + "@" + d + (sub ? "?subject=" + encodeURIComponent(sub) : "");
+    window.location.href = mailtoUrl;
   });
+});
 
-  // 2. Télémétrie protégée (URL masquée en Base64)
-  (function () {
-    try {
-      var src = new URLSearchParams(location.search).get("utm_source");
-      if (!src) return;
+// 2. Télémétrie protégée (exclusion admin via empreinte SHA-256)
+(async function () {
+  try {
+    // Exclusion des environnements de dev
+    if (location.hostname === "localhost" || location.hostname.includes("github.dev")) {
+      return;
+    }
 
-      var endpoint = atob("aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J4bGhSZUJmTVlLbUdRbS1FdG5FWkg0UVdrYXZnRUZRaGlrR2YtWWhEY0pBOFhieV9QbmczZHVidXU1TlhYeXV2aDUvZXhlYw==");
+    var params = new URLSearchParams(location.search);
+    var token = params.get("k");
 
-      new Image().src =
-              endpoint +
-              "?src=" + encodeURIComponent(src) +
-              "&page=" + encodeURIComponent("Portfolio") +
-              "&ref=" + encodeURIComponent(document.referrer);
+    // Calcul de l'empreinte SHA-256 via l'API Web Crypto
+    async function hashStr(str) {
+      var buffer = new TextEncoder().encode(str);
+      var hashBuffer = await crypto.subtle.digest("SHA-256", buffer);
+      return Array.from(new Uint8Array(hashBuffer))
+        .map(function (b) { return b.toString(16).padStart(2, "0"); })
+        .join("");
+    }
 
+    // Contrôle du mot de passe secret via son empreinte
+    if (token) {
+      var h = await hashStr(token);
+      if (h === "1d4a65e38aa0045c5ec3ba76fca94cac1829d56c970bb8aeed509e5a612f9db2") {
+        localStorage.setItem("_pref_uid", "1");
+        alert("Mode personnel activé.");
+        window.history.replaceState({}, document.title, window.location.pathname);
+        return;
+      }
+      if (token === "reset") {
+        localStorage.removeItem("_pref_uid");
+        alert("Mode personnel désactivé.");
+        window.history.replaceState({}, document.title, window.location.pathname);
+        return;
+      }
+    }
+
+    // Blocage si le navigateur est marqué comme le tien
+    if (localStorage.getItem("_pref_uid") === "1") {
+      return;
+    }
+
+    // Récupération de la source (avec repli sur "direct") et envoi
+    var src = params.get("utm_source") || "direct";
+    var ref = document.referrer || "Direct";
+    var endpoint = atob("aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J4bGhSZUJmTVlLbUdRbS1FdG5FWkg0UVdrYXZnRUZRaGlrR2YtWWhEY0pBOFhieV9QbmczZHVidXU1TlhYeXV2aDUvZXhlYw==");
+
+    new Image().src =
+      endpoint +
+      "?src=" + encodeURIComponent(src) +
+      "&page=" + encodeURIComponent("Portfolio") +
+      "&ref=" + encodeURIComponent(ref);
+
+    if (location.search) {
       window.history.replaceState({}, document.title, window.location.pathname);
-    } catch (e) {}
-  })();
+    }
+  } catch (e) {}
+})();
 
-  // Révèle la page uniquement quand la police et Tailwind sont prêts
-  function reveal() {
-    document.body.classList.add('ready');
-  }
-  if (document.fonts) {
-    document.fonts.ready.then(reveal);
-  } else {
-    window.addEventListener('DOMContentLoaded', reveal);
-  }
-  setTimeout(reveal, 250); // Filet de sécurité anti-blocage
+// 3. Révélation de la page
+function reveal() {
+  document.body.classList.add('ready');
+}
+if (document.fonts) {
+  document.fonts.ready.then(reveal);
+} else {
+  window.addEventListener('DOMContentLoaded', reveal);
+}
+setTimeout(reveal, 250);
 
 </script>
 </body>
