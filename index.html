@@ -1208,7 +1208,7 @@ document.querySelectorAll('.mail-btn').forEach(function (btn) {
     // Contrôle du mot de passe secret via son empreinte
     if (token) {
       var h = await hashStr(token);
-      if (h === "1d4a65e38aa0045c5ec3ba76fca94cac1829d56c970bb8aeed509e5a612f9db2") {
+      if (h === "40636329476f4dec86a296bf5cf06e27abae80e4a4c25e8a4f11a955353817ce") {
         localStorage.setItem("_pref_uid", "1");
         alert("Mode personnel activé.");
         window.history.replaceState({}, document.title, window.location.pathname);
